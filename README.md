@@ -1,8 +1,8 @@
 # serialhistoryapp
 
-> Serial History Application
+> Product History Application
 
-## Build Setup
+## Frontend Setup
 
 ``` bash
 # install dependencies
@@ -18,5 +18,11 @@ npm run build
 npm run build --report
 ```
 
+## Backend Setup
+
+``` bash
+# run in developing mode
+npm run server:dev
+```
+
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-# serialhistoryapp

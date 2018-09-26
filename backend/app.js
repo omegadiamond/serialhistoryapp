@@ -1,22 +1,21 @@
-const express = require('express');
-const path = require('path');
-/*const bodyParser = require('body-parser')*/
+const express = require('express')
 
-const recordsRoute = require('./routes/records');
+const recordsRoute = require('./routes/records')
+const setupRoute = require('./routes/setup')
 
-var app = express();
+var app = express()
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-  next();
-});
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST')
+  next()
+})
 
-app.use('/records/', recordsRoute);
+app.use('/setup', setupRoute)
+app.use('/records', recordsRoute)
 
-module.exports = app;
+module.exports = app
