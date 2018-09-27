@@ -48,7 +48,8 @@ export default {
     },
     loginUser () {
       EventBus.$emit('login', this.name)
-      this.$router.push('/records/add')
+      // this.$router.push('/records/add')
+      this.$router.push('/')
     }
   }
 }

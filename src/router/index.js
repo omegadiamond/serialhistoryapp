@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import AppLogin from '@/components/AppLogin'
+import RecordList from '@/components/records/RecordList'
 import AddRecord from '@/components/records/AddRecord'
 import { EventBus } from '@/router/event-bus'
 
 Vue.use(Router)
 
-var loggedIn = false
-var loggedName = null
+let loggedIn = false
+let loggedName = null
 
 EventBus.$on('login', (name) => {
   loggedIn = true
@@ -17,7 +17,7 @@ EventBus.$on('login', (name) => {
 
 const ifAuthenticated = (to, from, next) => {
   if (loggedIn) {
-    to.query.author = loggedName
+    to.query.loggedName = loggedName
     next()
     return
   }
@@ -36,7 +36,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: HelloWorld,
+      component: RecordList,
       beforeEnter: ifAuthenticated
     },
     {
