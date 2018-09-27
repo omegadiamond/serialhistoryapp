@@ -1,4 +1,5 @@
 const express = require('express')
+const checkAuth = require('./middlewares/check-auth')
 
 const recordsRoute = require('./routes/records')
 const setupRoute = require('./routes/setup')
@@ -16,6 +17,6 @@ app.use((req, res, next) => {
 })
 
 app.use('/setup', setupRoute)
-app.use('/records', recordsRoute)
+app.use('/records', checkAuth, recordsRoute)
 
 module.exports = app

@@ -1,10 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const checkAuth = require('../middlewares/check-auth')
-const { Op } = require('../config/db')
+const { Op } = require('../db')
 const Record = require('../models/Record')
 
-router.get('/', checkAuth, (req, res, next) => {
+router.get('/', (req, res, next) => {
   const search = req.query.search
   var searchWhere = {}
   if (search) {
@@ -27,29 +26,27 @@ router.get('/', checkAuth, (req, res, next) => {
       res.status(200).json(records)
     })
     .catch(err => {
-      res.status(500).send('Internal Server Error')
+      res.status(500).json({error: 'Cannot get records'})
       throw err
     })
 })
 
-router.post('/', checkAuth, (req, res, next) => {
-  const author = req.author
+router.post('/', (req, res, next) => {
+  console.log(req.body)
   Record.create({
-    created_by: 'someone',
-    serial_number: '1',
-    product_code: 'sdf',
-    sales_order: 'jiewrj',
-    customer_id: '23567647',
-    description: 'description'
+    created_by: req.username,
+    product_code: req.body.product_code,
+    sales_order: req.body.sales_order,
+    customer_id: req.body.customer_id,
+    description: req.body.description
   })
     .then(result => {
-      console.log(result.serial_number)
+      res.status(201).json({ record: result })
     })
     .catch(err => {
+      res.status(500).json({ error: 'can\'t create new record' })
       throw err
     })
-
-  res.json({test: 'this is RECORD test'})
 })
 
 module.exports = router

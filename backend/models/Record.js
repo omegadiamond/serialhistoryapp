@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const sequelize = require('../config/db')
+const sequelize = require('../db')
 const sequelizePaginate = require('sequelize-paginate')
 
 const Record = sequelize.define('record', {
@@ -15,8 +15,9 @@ const Record = sequelize.define('record', {
   },
   serial_number: {
     type: Sequelize.CHAR(6),
-    allowNull: false,
-    primaryKey: true
+    allowNull: true,
+    primaryKey: true,
+    default: null
   },
   product_code: {
     type: Sequelize.CHAR(7),
