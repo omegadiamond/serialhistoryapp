@@ -30,6 +30,12 @@
       </md-table-row>
     </md-table>
 
+    <md-card class="no-records" v-if="records.length === 0">
+      <md-card-content>
+        No records found...
+      </md-card-content>
+    </md-card>
+
     <div class="actionDiv">
       <md-button class="md-primary md-raised md-icon-button md-mini" @click="previousPage()" :disabled="page <= 1">
         <md-icon>navigate_before</md-icon>
@@ -52,7 +58,7 @@ export default {
   data () {
     return {
       search: '',
-      records: null,
+      records: [],
       page: 1,
       paginate: 10,
       pages: null,
@@ -114,5 +120,9 @@ export default {
   }
   .actionDiv .page-button{
     min-width: 30px;
+  }
+  .no-records{
+    text-align: center;
+    color: #888;
   }
 </style>

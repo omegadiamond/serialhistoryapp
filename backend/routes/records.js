@@ -4,11 +4,13 @@ const { Op } = require('../config/db')
 const Record = require('../models/Record')
 
 router.get('/', (req, res, next) => {
-
-  const search = req.query.search;
+  const search = req.query.search
   var searchWhere = {}
   if (search) {
-    searchWhere = { serial_number: { [Op.like]: `%${search}%` } }
+    searchWhere = { [Op.or]: [
+      { serial_number: {[Op.iLike]: `%${search}%` }},
+      { product_code: {[Op.iLike]: `%${search}%` }},
+      { sales_order: {[Op.iLike]: `%${search}%` }} ] }
   }
 
   const options = {
