@@ -5,9 +5,7 @@
         <div class="md-toolbar-section-start">
           <h1 class="md-title">Records</h1>
         </div>
-
         <div class="md-toolbar-section-start"></div>
-
         <md-field md-clearable class="md-toolbar-section-end">
           <md-input placeholder="Search" maxlength="20" v-model="search" @input="searchRecord()"/>
         </md-field>
@@ -32,7 +30,12 @@
 
     <md-card class="no-records" v-if="records.length === 0">
       <md-card-content>
-        No records found...
+        <md-button disabled class="md-mini">No records found...</md-button>
+        <router-link to="/records/add">
+          <md-button class="md-fab md-mini">
+            <md-icon>add</md-icon>
+          </md-button>
+        </router-link>
       </md-card-content>
     </md-card>
 
@@ -70,7 +73,6 @@ export default {
   mounted () {
     axios.get(backendUrl + `?page=${this.page}&paginate=${this.paginate}`)
       .then(response => {
-        console.log(response.data)
         this.records = response.data.docs
         this.pages = response.data.pages
         this.results = response.data.results
@@ -83,7 +85,6 @@ export default {
     getRecords () {
       axios.get(backendUrl + `?page=${this.page}&paginate=${this.paginate}&search=${this.search}`)
         .then(response => {
-          console.log('getRecords', response)
           this.records = response.data.docs
           this.pages = response.data.pages
           this.results = response.data.results
@@ -105,7 +106,6 @@ export default {
       }
     },
     searchRecord () {
-      console.log(this.search)
       this.page = 1
       this.getRecords()
     }

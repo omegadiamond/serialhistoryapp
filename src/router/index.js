@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import AppLogin from '@/components/AppLogin'
 import RecordList from '@/components/records/RecordList'
 import AddRecord from '@/components/records/AddRecord'
-import { EventBus } from '@/router/event-bus'
+import { EventBus } from '@/event-bus'
+const axios = require('axios')
 
 Vue.use(Router)
 
@@ -13,6 +14,7 @@ let loggedName = null
 EventBus.$on('login', (name) => {
   loggedIn = true
   loggedName = name
+  axios.defaults.headers.common['Authorization'] = loggedName
 })
 
 const ifAuthenticated = (to, from, next) => {

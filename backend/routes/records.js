@@ -1,16 +1,18 @@
 const express = require('express')
 const router = express.Router()
+const checkAuth = require('../middlewares/check-auth')
 const { Op } = require('../config/db')
 const Record = require('../models/Record')
 
-router.get('/', (req, res, next) => {
+router.get('/', checkAuth, (req, res, next) => {
   const search = req.query.search
   var searchWhere = {}
   if (search) {
     searchWhere = { [Op.or]: [
       { serial_number: {[Op.iLike]: `%${search}%` }},
       { product_code: {[Op.iLike]: `%${search}%` }},
-      { sales_order: {[Op.iLike]: `%${search}%` }} ] }
+      { sales_order: {[Op.iLike]: `%${search}%` }},
+      { customer_id: {[Op.iLike]: `%${search}%` }} ] }
   }
 
   const options = {
@@ -30,7 +32,8 @@ router.get('/', (req, res, next) => {
     })
 })
 
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
+  const author = req.author
   Record.create({
     created_by: 'someone',
     serial_number: '1',

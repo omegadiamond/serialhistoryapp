@@ -24,7 +24,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-import { EventBus } from '@/router/event-bus'
+import { EventBus } from '@/event-bus'
 
 export default {
   name: 'Login',
