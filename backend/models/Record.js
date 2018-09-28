@@ -16,8 +16,8 @@ const Record = sequelize.define('record', {
   serial_number: {
     type: Sequelize.CHAR(6),
     allowNull: true,
-    primaryKey: true,
-    default: null
+    defaultValue: null,
+    primaryKey: true
   },
   product_code: {
     type: Sequelize.CHAR(7),

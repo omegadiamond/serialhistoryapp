@@ -12,12 +12,12 @@ CREATE TABLE IF NOT EXISTS records (
 WITH (
   OIDS = FALSE
 );
-CREATE INDEX IF NOT EXISTS customer_id_idx ON public.records USING btree (customer_id);
-CREATE INDEX IF NOT EXISTS product_code_idx ON public.records USING btree (product_code);
-CREATE INDEX IF NOT EXISTS serial_number_idx ON public.records USING btree (serial_number);
+CREATE INDEX IF NOT EXISTS customer_id_idx ON records USING btree (customer_id);
+CREATE INDEX IF NOT EXISTS product_code_idx ON records USING btree (product_code);
+CREATE INDEX IF NOT EXISTS serial_number_idx ON records USING btree (serial_number);
 
 -- create product_serial sequence
-CREATE SEQUENCE IF NOT EXISTS public.product_serial
+CREATE SEQUENCE IF NOT EXISTS product_serial
    INCREMENT 1
    START 1
    MINVALUE 1;
@@ -25,11 +25,19 @@ CREATE SEQUENCE IF NOT EXISTS public.product_serial
 -- create generate_serial function
 CREATE OR REPLACE FUNCTION generate_serial() RETURNS varchar AS $$
 DECLARE
-	next_serial VARCHAR;
+	serial INT;
+	result VARCHAR;
+	month INT;
 BEGIN
-	SELECT INTO next_serial nextval('product_serial');
-	next_serial := LPAD(next_serial, 4, '0');
-	RETURN CONCAT(TO_CHAR(CURRENT_DATE, 'YY'), next_serial);
+	SELECT INTO serial nextval('product_serial');
+	month := extract(month from current_date);
+
+	IF month = 1 AND serial > 500 THEN
+	  ALTER SEQUENCE product_serial RESTART WITH 1;
+	END IF;
+
+	result := LPAD(CAST(serial AS text), 4, '0');
+	RETURN CONCAT(TO_CHAR(CURRENT_DATE, 'YY'), result);
 END; $$
 LANGUAGE PLPGSQL;
 
@@ -46,4 +54,4 @@ BEGIN
 END;
 $records_stamp$ LANGUAGE plpgsql;
 DROP trigger if EXISTS records_stamp ON records;
-CREATE TRIGGER records_stamp BEFORE INSERT ON public.records FOR EACH ROW EXECUTE PROCEDURE public.records_stamp();
+CREATE TRIGGER records_stamp BEFORE INSERT ON records FOR EACH ROW EXECUTE PROCEDURE records_stamp();

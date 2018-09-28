@@ -20,3 +20,6 @@ app.use('/setup', setupRoute)
 app.use('/records', checkAuth, recordsRoute)
 
 module.exports = app
+
+var d = new Date().getMonth()
+console.log(d);
