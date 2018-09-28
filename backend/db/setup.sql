@@ -1,12 +1,13 @@
 -- create records table and it's indexes
 CREATE TABLE IF NOT EXISTS records (
-   created_at timestamp without time zone NOT NULL,
+   created_at timestamp with time zone NOT NULL,
    created_by text NOT NULL,
    serial_number character(6) NOT NULL,
    product_code character(7) NOT NULL,
    sales_order character varying(20) NOT NULL,
    customer_id character varying(20) NOT NULL,
    description text NOT NULL,
+   warranty_to date,
    PRIMARY KEY (created_at, serial_number)
 )
 WITH (
@@ -30,13 +31,13 @@ DECLARE
 	month INT;
 BEGIN
 	SELECT INTO serial nextval('product_serial');
-	month := extract(month from current_date);
+	month := extract(month FROM current_date);
 
 	IF month = 1 AND serial > 500 THEN
 	  ALTER SEQUENCE product_serial RESTART WITH 1;
 	END IF;
 
-	result := LPAD(CAST(serial AS text), 4, '0');
+	result := LPAD(RIGHT(CAST(serial AS text), 4), 4, '0');
 	RETURN CONCAT(TO_CHAR(CURRENT_DATE, 'YY'), result);
 END; $$
 LANGUAGE PLPGSQL;

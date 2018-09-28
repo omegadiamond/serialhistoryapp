@@ -7,7 +7,10 @@ const Record = sequelize.define('record', {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.NOW,
-    primaryKey: true
+    primaryKey: true,
+    get () {
+      return this.getDataValue('created_at').toLocaleDateString('en-US')
+    }
   },
   created_by: {
     type: Sequelize.TEXT,
@@ -34,6 +37,10 @@ const Record = sequelize.define('record', {
   description: {
     type: Sequelize.TEXT,
     allowNull: false
+  },
+  warranty_to: {
+    type: Sequelize.DATEONLY,
+    allowNull: true
   }
 }, {
   timestamps: true,

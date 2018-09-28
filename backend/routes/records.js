@@ -2,9 +2,13 @@ const express = require('express')
 const router = express.Router()
 const { Op } = require('../db')
 const Record = require('../models/Record')
+const checkAuth = require('../middlewares/check-auth')
 
-router.get('/', (req, res, next) => {
+router.get('/', checkAuth, (req, res, next) => {
+  console.log(req.query)
   const search = req.query.search
+  const sortBy = req.query.sortBy || 'created_at'
+  const sortDirection = req.query.sortDirection || 'DESC'
   var searchWhere = {}
   if (search) {
     searchWhere = { [Op.or]: [
@@ -15,10 +19,10 @@ router.get('/', (req, res, next) => {
   }
 
   const options = {
-    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description'],
+    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description', 'created_at'],
     page: req.query.page || 1,
     paginate: req.query.paginate || 10,
-    order: [['created_at', 'DESC']],
+    order: [[sortBy, sortDirection]],
     where: searchWhere
   }
   Record.paginate(options)
@@ -31,14 +35,14 @@ router.get('/', (req, res, next) => {
     })
 })
 
-router.post('/', (req, res, next) => {
-  console.log(req.body)
+router.post('/', checkAuth, (req, res, next) => {
   Record.create({
     created_by: req.username,
     product_code: req.body.product_code,
     sales_order: req.body.sales_order,
     customer_id: req.body.customer_id,
-    description: req.body.description
+    description: req.body.description,
+    warranty_to: req.body.warranty_to
   })
     .then(result => {
       res.status(201).json({ record: result })

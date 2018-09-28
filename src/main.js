@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { MdToolbar, MdButton, MdField, MdCard, MdTable, MdContent } from 'vue-material/dist/components'
+import { MdToolbar, MdButton, MdField, MdCard, MdTable, MdContent, MdRipple, MdDatepicker, MdDialog } from 'vue-material/dist/components'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 
@@ -15,6 +15,9 @@ Vue.use(MdField)
 Vue.use(MdCard)
 Vue.use(MdTable)
 Vue.use(MdContent)
+Vue.use(MdRipple)
+Vue.use(MdDatepicker)
+Vue.use(MdDialog)
 
 /* eslint-disable no-new */
 new Vue({

@@ -8,7 +8,7 @@
           <md-card-content>
               <md-field v-bind:class="{ 'md-invalid': $v.name.$invalid && $v.name.$dirty }">
                 <label for="name">Your Name</label>
-                <md-input name="name" id="name" v-model.trim="name"/>
+                <md-input name="name" id="name" v-model.trim="name" autofocus/>
                 <span class="md-error" v-if="!$v.name.required">Name is required</span>
                 <span class="md-error" v-else-if="!$v.name.minlength && !$v.name.maxlength">Invalid name length</span>
               </md-field>

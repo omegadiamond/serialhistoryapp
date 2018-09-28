@@ -12,11 +12,48 @@
       </md-table-toolbar>
 
       <md-table-row>
-        <md-table-head>Serial #</md-table-head>
-        <md-table-head>Product Code</md-table-head>
-        <md-table-head>Sales Order #</md-table-head>
-        <md-table-head>Customer ID</md-table-head>
-        <md-table-head>Description</md-table-head>
+        <md-table-head>
+          <span @click="changeSort('serial_number')" class="sort">
+            Serial #
+            <md-icon v-if="sortBy === 'serial_number' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'serial_number' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('product_code')" class="sort">
+            Product Code
+            <md-icon v-if="sortBy === 'product_code' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'product_code' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('sales_order')" class="sort">
+            Sales Order #
+            <md-icon v-if="sortBy === 'sales_order' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'sales_order' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('customer_id')" class="sort">
+            Customer ID
+            <md-icon v-if="sortBy === 'customer_id' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'customer_id' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('description')" class="sort">
+            Description
+            <md-icon v-if="sortBy === 'description' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'description' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('created_at')" class="sort">
+            Date
+            <md-icon v-if="sortBy === 'created_at' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'created_at' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
       </md-table-row>
 
       <md-table-row v-for="(record, index) in records" :key="index">
@@ -24,7 +61,10 @@
         <md-table-cell>{{ record.product_code }}</md-table-cell>
         <md-table-cell>{{ record.sales_order }}</md-table-cell>
         <md-table-cell>{{ record.customer_id }}</md-table-cell>
-        <md-table-cell>{{ record.description }}</md-table-cell>
+        <md-table-cell>
+          <truncate clamp="Read More" :length="300" less="Show Less" type="html" :text="record.description"></truncate>
+        </md-table-cell>
+        <md-table-cell>{{ record.created_at }}</md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -32,8 +72,8 @@
       <md-card-content>
         <md-button disabled class="md-mini">No records found...</md-button>
         <router-link to="/records/add">
-          <md-button class="md-fab md-mini">
-            <md-icon>add</md-icon>
+          <md-button class="md-button md-accent md-raised">
+            <md-icon>add</md-icon> Add New
           </md-button>
         </router-link>
       </md-card-content>
@@ -52,12 +92,16 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { environment } from '@/environments/environment'
-const axios = require('axios')
+import truncate from 'vue-truncate-collapsed'
 const backendUrl = environment.apiURL + 'records'
 
 export default {
   name: 'RecordsList',
+  components: {
+    truncate
+  },
   data () {
     return {
       search: '',
@@ -65,25 +109,19 @@ export default {
       page: 1,
       paginate: 10,
       pages: null,
-      results: null
+      results: 0,
+      sortBy: 'created_at',
+      sortDirection: 'DESC'
     }
   },
   computed: {
   },
   mounted () {
-    axios.get(backendUrl + `?page=${this.page}&paginate=${this.paginate}`)
-      .then(response => {
-        this.records = response.data.docs
-        this.pages = response.data.pages
-        this.results = response.data.results
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    this.getRecords()
   },
   methods: {
     getRecords () {
-      axios.get(backendUrl + `?page=${this.page}&paginate=${this.paginate}&search=${this.search}`)
+      axios.get(backendUrl + `?page=${this.page}&paginate=${this.paginate}&search=${this.search}&sortBy=${this.sortBy}&sortDirection=${this.sortDirection}`)
         .then(response => {
           this.records = response.data.docs
           this.pages = response.data.pages
@@ -92,6 +130,17 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    changeSort (column) {
+      if (this.sortBy === column && this.sortDirection === 'ASC') {
+        this.sortDirection = 'DESC'
+      } else {
+        this.sortDirection = 'ASC'
+      }
+      this.sortBy = column
+      this.getRecords()
+      console.log(this.sortBy)
+      console.log(this.sortDirection)
     },
     nextPage () {
       if (this.page < this.pages) {
@@ -108,21 +157,37 @@ export default {
     searchRecord () {
       this.page = 1
       this.getRecords()
+    },
+    onSelect (record) {
+      if (record) {
+        console.log('selected')
+      }
+    }
+  },
+  filters: {
+    truncate: function (text, length) {
+      return text.length > length ? text.slice(0, length) + '...' : text
     }
   }
 }
 </script>
 
 <style scoped>
+  span.sort{
+    cursor: pointer;
+  }
+  .md-selected-single{
+    font-weight: inherit;
+  }
+  .no-records{
+    text-align: center;
+    color: #888;
+  }
   .actionDiv{
     margin-top: 15px;
     text-align: center;
   }
   .actionDiv .page-button{
     min-width: 30px;
-  }
-  .no-records{
-    text-align: center;
-    color: #888;
   }
 </style>

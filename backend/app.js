@@ -1,5 +1,4 @@
 const express = require('express')
-const checkAuth = require('./middlewares/check-auth')
 
 const recordsRoute = require('./routes/records')
 const setupRoute = require('./routes/setup')
@@ -17,9 +16,6 @@ app.use((req, res, next) => {
 })
 
 app.use('/setup', setupRoute)
-app.use('/records', checkAuth, recordsRoute)
+app.use('/records', recordsRoute)
 
 module.exports = app
-
-var d = new Date().getMonth()
-console.log(d);
