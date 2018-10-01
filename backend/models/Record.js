@@ -37,7 +37,10 @@ const Record = sequelize.define('record', {
   },
   description: {
     type: Sequelize.TEXT,
-    allowNull: false
+    allowNull: false,
+    get () {
+      return this.getDataValue('description') /* .replace(/(?:\r\n|\r|\n)/g, '<br>'); */
+    }
   },
   warranty_to: {
     type: Sequelize.DATEONLY,

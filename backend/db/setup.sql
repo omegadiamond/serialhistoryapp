@@ -45,7 +45,7 @@ LANGUAGE PLPGSQL;
 -- create trigger to insert serial_number
 CREATE OR REPLACE FUNCTION records_stamp() RETURNS TRIGGER AS $records_stamp$
 BEGIN
-	IF NEW.serial_number IS NULL THEN
+	IF NEW.serial_number IS NULL OR char_length(NEW.serial_number) < 4 THEN
 		NEW.serial_number := generate_serial();
 	END IF;
 	IF NEW.created_at IS NULL THEN

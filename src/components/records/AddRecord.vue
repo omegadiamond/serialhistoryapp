@@ -3,10 +3,18 @@
       <form novalidate @submit.prevent="validateRecord">
         <md-card>
           <md-card-header>
-            <h1 class="md-title">Add Product Record</h1>
+            <h1 class="md-title" v-if="record.serial_number">Add Record for Serial #: <md-content class="md-primary">{{ record.serial_number }}</md-content> </h1>
+            <h1 class="md-title" v-else>Add New Product Record</h1>
           </md-card-header>
 
           <md-card-content>
+            <md-field :class="getValidationClass('serial_number')" v-if="record.created_at">
+              <label for="serial_number">Serial #</label>
+              <md-input name="serial_number" id="serial_number" v-model.trim="record.serial_number" :disabled="submitted"/>
+              <span class="md-error" v-if="!$v.record.serial_number.required">Serial # should be {{ $v.record.serial_number.$params.minLength.min }} characters long</span>
+              <span class="md-error" v-else-if="!$v.record.serial_number.minlength && !v.record.serial_number.maxlength">Serial # should be {{ $v.record.serial_number.$params.minLength.min }} characters long</span>
+            </md-field>
+
             <md-field :class="getValidationClass('product_code')">
               <label for="product_code">Product Code</label>
               <md-input name="product_code" id="product_code" v-model.trim="record.product_code" :disabled="submitted" ref="product_code" v-focus="focused" @focus="focused = true" @blur="focused = false"/>
@@ -28,7 +36,7 @@
               <span class="md-error" v-else-if="!$v.record.customer_id.minlength && !$v.record.customer_id.maxlength">Customer ID should be between {{ $v.record.customer_id.$params.minLength.min }} and {{ $v.record.customer_id.$params.maxLength.max }} characters</span>
             </md-field>
 
-            <md-datepicker v-model="record.warranty_to" md-immediately :disabled="submitted">
+            <md-datepicker v-model="record.warranty_to" md-immediately :disabled="submitted" ref="datepick">
               <label>Warranty Ends On</label>
             </md-datepicker>
 
@@ -41,10 +49,15 @@
           </md-card-content>
 
           <md-card-actions v-bind:style="[recordSaved ? {'justify-content': 'space-between'} : {}]">
-            <md-content class="md-headline" v-if="record.serial_number">New Serial #:
-              <md-content class="md-primary">{{ record.serial_number }}</md-content>
+            <md-content class="md-headline" v-if="newSerialNumber">New Serial #:
+              <md-content class="md-primary">{{ newSerialNumber }}</md-content>
             </md-content>
-            <md-button type="submit" class="md-primary" :disabled="submitted">Get Serial #</md-button>
+            <md-content class="md-headline" v-else-if="recordSaved && record.serial_number" style="color: gray">Saved..</md-content>
+
+            <md-button type="submit" class="md-primary" :disabled="submitted">
+              <span v-if="record.created_at">Submit</span>
+              <span v-else>Get Serial #</span>
+            </md-button>
           </md-card-actions>
         </md-card>
       </form>
@@ -53,6 +66,11 @@
         <md-button class="md-raised md-accent" @click="resetRecordForm">
           <md-icon>add</md-icon> Add New
         </md-button>
+        <router-link to="/">
+          <md-button class="md-raised md-primary">
+            <md-icon>list</md-icon> View All
+          </md-button>
+        </router-link>
       </div>
     </div>
 </template>
@@ -75,15 +93,16 @@ export default {
   data: () => ({
     focused: true,
     record: {
+      serial_number: null,
       product_code: null,
       sales_order: null,
       customer_id: null,
       description: null,
-      warranty_to: null,
-      serial_number: null
+      warranty_to: null
     },
+    submitted: false,
     recordSaved: false,
-    submitted: false
+    newSerialNumber: null
   }),
   validations: {
     record: {
@@ -106,7 +125,17 @@ export default {
         required,
         minLength: minLength(5),
         maxLength: maxLength(1500)
+      },
+      serial_number: {
+        minLength: minLength(6),
+        maxLength: maxLength(6)
       }
+    }
+  },
+  mounted () {
+    if (this.$route.params.record) {
+      this.record = this.$route.params.record
+      this.focused = false
     }
   },
   methods: {
@@ -126,14 +155,17 @@ export default {
       this.submitted = true
 
       axios.post(backendUrl, {
+        serial_number: this.record.serial_number,
         product_code: this.record.product_code,
         sales_order: this.record.sales_order,
         customer_id: this.record.customer_id,
-        description: this.record.description,
-        warranty_to: this.record.warranty_to
+        warranty_to: this.record.warranty_to,
+        description: this.record.description
       })
         .then(response => {
-          this.record = response.data.record
+          if (!this.record.serial_number) {
+            this.newSerialNumber = response.data.record.serial_number
+          }
           this.recordSaved = true
         })
         .catch(err => {
@@ -145,14 +177,16 @@ export default {
         product_code: null,
         sales_order: null,
         customer_id: null,
+        warranty_to: '',
         description: null,
-        warranty_to: null,
         serial_number: null
       }
+      this.$refs.datepick.modelDate = ''
       this.submitted = false
       this.recordSaved = false
-      this.focused = true
+      this.newSerialNumber = null
       this.$v.$reset()
+      this.focused = true
     }
   }
 }

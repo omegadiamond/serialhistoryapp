@@ -19,7 +19,7 @@ router.get('/', checkAuth, (req, res, next) => {
   }
 
   const options = {
-    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description', 'warranty_to', 'created_at'],
+    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description', 'warranty_to', 'created_at', 'created_by'],
     page: req.query.page || 1,
     paginate: req.query.paginate || 10,
     order: [[sortBy, sortDirection]],
@@ -38,6 +38,7 @@ router.get('/', checkAuth, (req, res, next) => {
 router.post('/', checkAuth, (req, res, next) => {
   Record.create({
     created_by: req.username,
+    serial_number: req.body.serial_number,
     product_code: req.body.product_code,
     sales_order: req.body.sales_order,
     customer_id: req.body.customer_id,

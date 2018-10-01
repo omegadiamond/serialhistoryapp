@@ -47,6 +47,7 @@ export default new Router({
       beforeEnter: ifNotAuthenticated
     },
     {
+      name: 'add-record',
       path: '/records/add',
       component: AddRecord,
       beforeEnter: ifAuthenticated

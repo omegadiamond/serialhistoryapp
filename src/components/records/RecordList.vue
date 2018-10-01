@@ -61,18 +61,28 @@
             <md-icon v-if="sortBy === 'created_at' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
           </span>
         </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('created_by')" class="sort">
+            By
+            <md-icon v-if="sortBy === 'created_by' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'created_by' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
       </md-table-row>
 
-      <md-table-row v-for="(record, index) in records" :key="index">
-        <md-table-cell>{{ record.serial_number }}</md-table-cell>
+      <md-table-row v-for="(record, index) in records" :key="index" @click="onSelect(record)" class="record-row">
+        <md-table-cell><a @click.prevent="addRecordBySerial(record)" class="record-serial">{{ record.serial_number }}</a></md-table-cell>
         <md-table-cell>{{ record.product_code }}</md-table-cell>
         <md-table-cell>{{ record.sales_order }}</md-table-cell>
         <md-table-cell>{{ record.customer_id }}</md-table-cell>
-        <md-table-cell>
-          <truncate clamp="Read More" :length="300" less="Show Less" type="html" :text="record.description"></truncate>
+        <md-table-cell class="record-description">
+          <!--<truncate clamp="Read More" :length="300" less="Show Less" type="html" :text="record.description"></truncate>-->
+          <span v-if="selectedRecord === record">{{ selectedRecord.description }}</span>
+          <span v-else>{{ record.description | truncate(300) }}</span>
         </md-table-cell>
         <md-table-cell>{{ record.warranty_to }}</md-table-cell>
         <md-table-cell>{{ record.created_at }}</md-table-cell>
+        <md-table-cell>{{ record.created_by }}</md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -88,12 +98,20 @@
     </md-card>
 
     <div class="actionDiv">
+      <md-button class="md-primary md-raised md-icon-button md-mini" @click="firstPage()" :disabled="page <= 1" style="margin-right: 10px;">
+        <md-icon>first_page</md-icon>
+      </md-button>
+
       <md-button class="md-primary md-raised md-icon-button md-mini" @click="previousPage()" :disabled="page <= 1">
         <md-icon>navigate_before</md-icon>
       </md-button>
       <md-button class="page-button" disabled>{{ page }}/{{ pages }}</md-button>
       <md-button class="md-primary md-raised md-icon-button md-mini" @click="nextPage()" :disabled="page === pages">
         <md-icon>navigate_next</md-icon>
+      </md-button>
+
+      <md-button class="md-primary md-raised md-icon-button md-mini" @click="lastPage()" :disabled="page === pages" style="margin-left: 10px;">
+        <md-icon>last_page</md-icon>
       </md-button>
     </div>
   </div>
@@ -119,10 +137,9 @@ export default {
       pages: null,
       results: 0,
       sortBy: 'created_at',
-      sortDirection: 'DESC'
+      sortDirection: 'DESC',
+      selectedRecord: null
     }
-  },
-  computed: {
   },
   mounted () {
     this.getRecords()
@@ -147,8 +164,6 @@ export default {
       }
       this.sortBy = column
       this.getRecords()
-      console.log(this.sortBy)
-      console.log(this.sortDirection)
     },
     nextPage () {
       if (this.page < this.pages) {
@@ -162,18 +177,28 @@ export default {
         this.getRecords()
       }
     },
-    searchRecord () {
+    firstPage () {
       this.page = 1
       this.getRecords()
     },
+    lastPage () {
+      this.page = this.pages
+      this.getRecords()
+    },
+    searchRecord () {
+      this.firstPage()
+    },
     onSelect (record) {
-      if (record) {
-        console.log('selected')
-      }
+      this.selectedRecord = record
+    },
+    addRecordBySerial (record) {
+      record.description = ''
+      this.$router.push({name: 'add-record', params: {record: record}})
     }
   },
   filters: {
     truncate: function (text, length) {
+      length = length || 300
       return text.length > length ? text.slice(0, length) + '...' : text
     }
   }
@@ -184,9 +209,16 @@ export default {
   span.sort{
     cursor: pointer;
   }
-  .md-selected-single{
-    font-weight: inherit;
+  /*.record-row{
+    cursor: pointer;
+  }*/
+  .record-serial{
+    cursor: pointer;
   }
+  .record-description{
+    white-space: pre-wrap;
+  }
+
   .no-records{
     text-align: center;
     color: #888;
