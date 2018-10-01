@@ -48,8 +48,15 @@
           </span>
         </md-table-head>
         <md-table-head>
+          <span @click="changeSort('warranty_to')" class="sort">
+            Warranty Ends
+            <md-icon v-if="sortBy === 'warranty_to' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'warranty_to' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
           <span @click="changeSort('created_at')" class="sort">
-            Date
+            Added
             <md-icon v-if="sortBy === 'created_at' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
             <md-icon v-if="sortBy === 'created_at' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
           </span>
@@ -64,6 +71,7 @@
         <md-table-cell>
           <truncate clamp="Read More" :length="300" less="Show Less" type="html" :text="record.description"></truncate>
         </md-table-cell>
+        <md-table-cell>{{ record.warranty_to }}</md-table-cell>
         <md-table-cell>{{ record.created_at }}</md-table-cell>
       </md-table-row>
     </md-table>

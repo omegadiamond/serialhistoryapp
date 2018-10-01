@@ -11,7 +11,7 @@
       </router-link>
       <router-link to="/">
         <md-button class="md-icon-button md-raised md-accent">
-          <md-icon>home</md-icon>
+          <md-icon>list</md-icon>
         </md-button>
       </router-link>
     </md-toolbar>

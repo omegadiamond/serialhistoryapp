@@ -19,7 +19,7 @@ router.get('/', checkAuth, (req, res, next) => {
   }
 
   const options = {
-    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description', 'created_at'],
+    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description', 'warranty_to', 'created_at'],
     page: req.query.page || 1,
     paginate: req.query.paginate || 10,
     order: [[sortBy, sortDirection]],
