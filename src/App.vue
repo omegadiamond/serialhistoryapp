@@ -3,8 +3,8 @@
     <md-toolbar md-elevation="1" class="md-primary nav-toolbar">
       <h1 class="md-title" style="flex: 1;" @click="navAddRecord()">Product History App</h1>
 
-      <md-button v-if="loggedIn" class="md-icon-button md-raised md-accent nav-button" @click=navAddRecord() title="Add New Record">
-        <md-icon>add</md-icon>
+      <md-button v-if="loggedIn" class="md-button md-raised md-accent nav-button" @click=navAddRecord() title="Add New Record">
+        Get New Serial #
       </md-button>
 
       <md-field v-if="loggedIn" class="nav-search" >
@@ -87,16 +87,22 @@ export default {
 
 <style>
 .nav-search{
-  max-width: 200px;
-  margin-left: 20px;
+  max-width: 180px;
+  margin-left: 5px;
   margin-right: 5px;
 }
-.nav-search:before{
-  background-color: #ff5252 !important;
+.nav-search input {
+  background-color: #fff !important;
+  padding: 0 10px !important;
+  width: 100%;
+  border-radius: 15px;
 }
-.nav-search.md-focused .md-input{
+.nav-search:before, .nav-search:after{
+  display: none;
+}
+/*.nav-search.md-focused .md-input{
   color: #ff5252 !important;
-}
+}*/
 
 .container{
   max-width: 1500px;

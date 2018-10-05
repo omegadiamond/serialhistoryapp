@@ -14,7 +14,7 @@
               </md-field>
           </md-card-content>
           <md-card-actions>
-            <md-button class="md-primary" type="submit">Login</md-button>
+            <md-button class="md-primary md-raised" type="submit">Login</md-button>
           </md-card-actions>
         </md-card>
       </form>

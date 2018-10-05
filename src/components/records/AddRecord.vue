@@ -3,37 +3,42 @@
       <form novalidate @submit.prevent="validateRecord">
         <md-card>
           <md-card-header>
-            <h1 class="md-title" v-if="record.serial_number">Add Record for Serial #: <md-content class="serial-num">{{ record.serial_number }}</md-content> </h1>
-            <h1 class="md-title" v-else>Add New Product Record</h1>
+            <h1 class="md-title" v-if="record.serial_number">Add more information for Serial #: <md-content class="serial-num">{{ record.serial_number }}</md-content> </h1>
+            <h1 class="md-title" v-else>Get new serial number</h1>
           </md-card-header>
 
           <md-card-content>
             <md-field :class="getValidationClass('serial_number')" v-if="record.created_at">
               <label for="serial_number">Serial #</label>
-              <md-input name="serial_number" id="serial_number" v-model.trim="record.serial_number" :disabled="submitted"/>
+              <md-input id="serial_number" v-model.trim="record.serial_number" :disabled="submitted"/>
               <span class="md-error" v-if="!$v.record.serial_number.required">Serial # should be {{ $v.record.serial_number.$params.minLength.min }} characters long</span>
               <span class="md-error" v-else-if="!$v.record.serial_number.minlength && !v.record.serial_number.maxlength">Serial # should be {{ $v.record.serial_number.$params.minLength.min }} characters long</span>
             </md-field>
 
             <md-field :class="getValidationClass('product_code')">
               <label for="product_code">Product Code</label>
-              <md-input name="product_code" id="product_code" v-model.trim="record.product_code" :disabled="submitted" ref="product_code" v-focus="focused" @focus="focused = true" @blur="focused = false"/>
+              <md-input id="product_code" v-model.trim="record.product_code" :disabled="submitted" ref="product_code" v-focus="focused" @focus="focused = true" @blur="focused = false"/>
               <span class="md-error" v-if="!$v.record.product_code.required">Product Code is required</span>
               <span class="md-error" v-else-if="!$v.record.product_code.minlength && !$v.record.product_code.maxlength">Product Code should be between {{ $v.record.product_code.$params.minLength.min }} and {{ $v.record.product_code.$params.maxLength.max }} characters</span>
             </md-field>
 
             <md-field :class="getValidationClass('sales_order')">
               <label for="sales_order">Sales Order #</label>
-              <md-input name="sales_order" id="sales_order" v-model.trim="record.sales_order" :disabled="submitted"/>
+              <md-input id="sales_order" v-model.trim="record.sales_order" :disabled="submitted"/>
               <span class="md-error" v-if="!$v.record.sales_order.required">Sales Order # is required</span>
               <span class="md-error" v-else-if="!$v.record.sales_order.minlength && !$v.record.sales_order.maxlength">Sales Order # should be between {{ $v.record.sales_order.$params.minLength.min }} and {{ $v.record.sales_order.$params.maxLength.max }} characters</span>
             </md-field>
 
-            <md-field :class="getValidationClass('customer_id')">
-              <label for="customer_id">Customer ID</label>
-              <md-input name="customer_id" id="customer_id" v-model.trim="record.customer_id" :disabled="submitted"/>
-              <span class="md-error" v-if="!$v.record.customer_id.required">Customer ID is required</span>
-              <span class="md-error" v-else-if="!$v.record.customer_id.minlength && !$v.record.customer_id.maxlength">Customer ID should be between {{ $v.record.customer_id.$params.minLength.min }} and {{ $v.record.customer_id.$params.maxLength.max }} characters</span>
+            <md-field :class="getValidationClass('customer_id_sold')">
+              <label for="customer_id_sold">Customer ID sold to</label>
+              <md-input id="customer_id_sold" v-model.trim="record.customer_id_sold" :disabled="submitted"/>
+              <span class="md-error" v-if="!$v.record.customer_id_sold.required">Customer ID is required</span>
+              <span class="md-error" v-else-if="!$v.record.customer_id_sold.minlength && !$v.record.customer_id_sold.maxlength">Customer ID should be between {{ $v.record.customer_id_sold.$params.minLength.min }} and {{ $v.record.customer_id_sold.$params.maxLength.max }} characters</span>
+            </md-field>
+
+            <md-field :class="getValidationClass('customer_id_ship')">
+              <label for="customer_id_ship">Customer Name shipped to</label>
+              <md-input id="customer_id_ship" v-model.trim="record.customer_id_ship" :disabled="submitted"/>
             </md-field>
 
             <datepicker
@@ -42,8 +47,7 @@
               v-model="record.warranty_to"
               :clear-button="true"
               :placeholder="'Warranty Expires On'"
-              :disabled="submitted"
-            >
+              :disabled="submitted">
             </datepicker>
 
             <md-field :class="getValidationClass('description')">
@@ -57,9 +61,15 @@
           <md-card-actions v-bind:style="[recordSaved ? {'justify-content': 'space-between'} : {}]">
             <md-content class="md-headline" v-if="newSerialNumber">New Serial #:
               <md-content class="serial-num">{{ newSerialNumber }}</md-content>
+              <md-button class="md-icon-button" @click.prevent="copySerial(newSerialNumber)">
+                <md-icon>file_copy</md-icon>
+              </md-button>
             </md-content>
             <md-content class="md-headline" v-else-if="recordSaved && record.serial_number" style="color: gray">Added..</md-content>
 
+            <!--<md-button type="button" class="md-accent md-raised" @click="resetFormFully()">
+              Reset
+            </md-button>-->
             <md-button type="submit" class="md-primary md-raised" :disabled="submitted">
               <span v-if="record.created_at">Add</span>
               <span v-else>Get Serial #</span>
@@ -69,13 +79,17 @@
       </form>
 
       <div class="actionDiv" v-if="recordSaved">
-        <md-button class="md-raised md-accent" @click="resetRecordForm">
-          <md-icon>add</md-icon> Add New
+        <md-button class="md-raised md-accent" @click="resetFormPartually()">
+          <md-icon>add</md-icon> Get Another
         </md-button>
         <md-button class="md-raised md-primary" @click="$emit('listRecords')">
           <md-icon>list</md-icon> View All
         </md-button>
       </div>
+
+      <md-snackbar :md-active.sync="showSnackbar" :md-duration="2500" md-persistent>
+        <span>Copied: {{ newSerialNumber }}</span>
+      </md-snackbar>
     </div>
 </template>
 
@@ -105,13 +119,15 @@ export default {
       serial_number: null,
       product_code: null,
       sales_order: null,
-      customer_id: null,
+      customer_id_sold: null,
+      customer_id_ship: null,
       description: null,
       warranty_to: null
     },
     submitted: false,
     recordSaved: false,
-    newSerialNumber: null
+    newSerialNumber: null,
+    showSnackbar: false
   }),
   validations: {
     record: {
@@ -121,12 +137,10 @@ export default {
         maxLength: maxLength(7)
       },
       sales_order: {
-        required,
         minLength: minLength(2),
         maxLength: maxLength(20)
       },
-      customer_id: {
-        required,
+      customer_id_sold: {
         minLength: minLength(2),
         maxLength: maxLength(20)
       },
@@ -145,13 +159,13 @@ export default {
       this.record = this.newRecord
       this.focused = false
     } else {
-      this.resetRecordForm()
+      this.resetFormPartually()
     }
   },
   watch: {
     newRecord: function (val) {
       if (!val) {
-        this.resetRecordForm()
+        this.resetFormPartually()
       }
     }
   },
@@ -175,7 +189,8 @@ export default {
         serial_number: this.record.serial_number,
         product_code: this.record.product_code,
         sales_order: this.record.sales_order,
-        customer_id: this.record.customer_id,
+        customer_id_sold: this.record.customer_id_sold,
+        customer_id_ship: this.record.customer_id_ship,
         warranty_to: this.record.warranty_to,
         description: this.record.description
       })
@@ -190,14 +205,39 @@ export default {
           alert('DB error occurred')
         })
     },
-    resetRecordForm () {
+    copySerial (serialNum) {
+      this.$copyText(serialNum).then((e) => {
+        this.showSnackbar = true
+        console.log('copied')
+      }, (err) => {
+        console.log('to err')
+        console.log('Error copying serial number', err)
+      })
+    },
+    resetFormPartually () {
+      this.record.serial_number = null
+      this.record.sales_order = null
+      this.record.customer_id_sold = null
+      this.record.customer_id_ship = null
+      this.record.warranty_to = null
+      this.record.created_at = null
+      this.record.created_by = null
+      this.submitted = false
+      this.recordSaved = false
+      this.newSerialNumber = null
+      this.$v.$reset()
+    },
+    resetFormFully () {
       this.record = {
+        serial_number: null,
         product_code: null,
         sales_order: null,
-        customer_id: null,
-        warranty_to: '',
+        customer_id_sold: null,
+        customer_id_ship: null,
+        warranty_to: null,
         description: null,
-        serial_number: null
+        created_at: null,
+        created_by: null
       }
       this.submitted = false
       this.recordSaved = false
@@ -216,7 +256,7 @@ export default {
   }
   .md-content{
     display: inline-block;
-    padding: 0 5px;
+    padding: 3px 5px;
   }
   .serial-num {
     color: blueviolet;

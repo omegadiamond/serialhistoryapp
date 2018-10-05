@@ -30,10 +30,17 @@
           </span>
         </md-table-head>
         <md-table-head>
-          <span @click="changeSort('customer_id')" class="sort">
-            Customer ID
-            <md-icon v-if="sortBy === 'customer_id' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
-            <md-icon v-if="sortBy === 'customer_id' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          <span @click="changeSort('customer_id_sold')" class="sort" title="Customer Id Sold To">
+            Sold To
+            <md-icon v-if="sortBy === 'customer_id_sold' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'customer_id_sold' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
+          </span>
+        </md-table-head>
+        <md-table-head>
+          <span @click="changeSort('customer_id_ship')" class="sort" title="Customer Name Shipped To">
+            Shipped To
+            <md-icon v-if="sortBy === 'customer_id_ship' && sortDirection === 'ASC'">arrow_drop_up</md-icon>
+            <md-icon v-if="sortBy === 'customer_id_ship' && sortDirection === 'DESC'">arrow_drop_down</md-icon>
           </span>
         </md-table-head>
         <md-table-head>
@@ -71,7 +78,8 @@
           <md-table-cell>{{ record.serial_number }}</md-table-cell>
           <md-table-cell>{{ record.product_code }}</md-table-cell>
           <md-table-cell>{{ record.sales_order }}</md-table-cell>
-          <md-table-cell>{{ record.customer_id }}</md-table-cell>
+          <md-table-cell>{{ record.customer_id_sold }}</md-table-cell>
+          <md-table-cell>{{ record.customer_id_ship }}</md-table-cell>
           <md-table-cell>{{ record.description | truncate(100) }}</md-table-cell>
           <md-table-cell>{{ formatDate(record.warranty_to) }}</md-table-cell>
           <md-table-cell>{{ formatDate(record.created_at) }}</md-table-cell>
@@ -79,7 +87,7 @@
         </md-table-row>
 
         <md-table-row :key="index + 'd'" class="record-description" :class="getRowClass2(index)">
-          <md-table-cell colspan="8">
+          <md-table-cell colspan="9">
             <div class="content">
               <p>{{ record.description }}</p>
               <div class="for-btn">
@@ -98,7 +106,7 @@
       <md-card-content>
         <md-button disabled class="md-mini">No records found...</md-button>
         <md-button class="md-button md-accent md-raised" @click="$emit('addNew')">
-          <md-icon>add</md-icon> Add New
+          <md-icon>add</md-icon> Get New Serial #
         </md-button>
       </md-card-content>
     </md-card>

@@ -28,11 +28,15 @@ const Record = sequelize.define('record', {
   },
   sales_order: {
     type: Sequelize.STRING(20),
-    allowNull: false
+    allowNull: true
   },
-  customer_id: {
+  customer_id_sold: {
     type: Sequelize.STRING(20),
-    allowNull: false
+    allowNull: true
+  },
+  customer_id_ship: {
+    type: Sequelize.STRING(20),
+    allowNull: true
   },
   description: {
     type: Sequelize.TEXT,
@@ -66,8 +70,12 @@ const Record = sequelize.define('record', {
       fields: ['product_code']
     },
     {
-      name: 'customer_id_idx',
-      fields: ['customer_id']
+      name: 'customer_id_sold_idx',
+      fields: ['customer_id_sold']
+    },
+    {
+      name: 'customer_id_ship_idx',
+      fields: ['customer_id_ship']
     }
   ]
 })

@@ -16,11 +16,12 @@ router.get('/', checkAuth, (req, res, next) => {
       { serial_number: {[Op.iLike]: `%${search}%` }},
       { product_code: {[Op.iLike]: `%${search}%` }},
       { sales_order: {[Op.iLike]: `%${search}%` }},
-      { customer_id: {[Op.iLike]: `%${search}%` }} ] }
+      { customer_id_sold: {[Op.iLike]: `%${search}%` }},
+      { customer_id_ship: {[Op.iLike]: `%${search}%` }}] }
   }
 
   const options = {
-    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id', 'description', 'warranty_to', 'created_at', 'created_by'],
+    attributes: ['serial_number', 'product_code', 'sales_order', 'customer_id_sold', 'customer_id_ship', 'description', 'warranty_to', 'created_at', 'created_by'],
     page: req.query.page || 1,
     paginate: req.query.paginate || 10,
     order: [[sortBy, sortDirection]],
@@ -42,7 +43,8 @@ router.post('/', checkAuth, (req, res, next) => {
     serial_number: req.body.serial_number,
     product_code: req.body.product_code,
     sales_order: req.body.sales_order,
-    customer_id: req.body.customer_id,
+    customer_id_sold: req.body.customer_id_sold,
+    customer_id_ship: req.body.customer_id_ship,
     description: req.body.description,
     warranty_to: req.body.warranty_to ? req.body.warranty_to : null /* moment(req.body.warranty_to, 'MM/DD/YY').format('YYYY-MM-DD') */
   })

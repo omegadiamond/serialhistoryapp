@@ -12,8 +12,9 @@ CREATE TABLE IF NOT EXISTS records (
    created_by text NOT NULL,
    serial_number character(6) NOT NULL,
    product_code character(7) NOT NULL,
-   sales_order character varying(20) NOT NULL,
-   customer_id character varying(20) NOT NULL,
+   sales_order character varying(20),
+   customer_id_sold character varying(20),
+   customer_id_ship character varying(20),
    description text NOT NULL,
    warranty_to date CHECK (warranty_to > '2000-01-01'),
    PRIMARY KEY (created_at, serial_number)
@@ -21,7 +22,8 @@ CREATE TABLE IF NOT EXISTS records (
 WITH (
   OIDS = FALSE
 );
-CREATE INDEX IF NOT EXISTS customer_id_idx ON records USING btree (customer_id);
+CREATE INDEX IF NOT EXISTS customer_id_sold_idx ON records USING btree (customer_id_sold);
+CREATE INDEX IF NOT EXISTS customer_id_ship_idx ON records USING btree (customer_id_ship);
 CREATE INDEX IF NOT EXISTS product_code_idx ON records USING btree (product_code);
 CREATE INDEX IF NOT EXISTS serial_number_idx ON records USING btree (serial_number);
 
