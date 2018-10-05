@@ -67,24 +67,28 @@
       </md-table-row>
 
       <template v-for="(record, index) in records" >
-        <md-table-row @click="onSelect(index)" :key="index">
-          <md-table-cell><a @click.prevent="addRecordBySerial(record)" class="record-serial">{{ record.serial_number }}</a></md-table-cell>
+        <md-table-row @click="onSelect(index)" :key="index" :class="getRowClass1(index)">
+          <md-table-cell>{{ record.serial_number }}</md-table-cell>
           <md-table-cell>{{ record.product_code }}</md-table-cell>
           <md-table-cell>{{ record.sales_order }}</md-table-cell>
           <md-table-cell>{{ record.customer_id }}</md-table-cell>
           <md-table-cell>{{ record.description | truncate(100) }}</md-table-cell>
-          <md-table-cell>{{ record.warranty_to }}</md-table-cell>
-          <md-table-cell>{{ record.created_at }}</md-table-cell>
+          <md-table-cell>{{ formatDate(record.warranty_to) }}</md-table-cell>
+          <md-table-cell>{{ formatDate(record.created_at) }}</md-table-cell>
           <md-table-cell>{{ record.created_by }}</md-table-cell>
         </md-table-row>
 
-        <md-table-row class="record-description" :key="index + 'd'" :style="{ display: index === selectedIndex ? 'table-row' : 'none'}">
+        <md-table-row :key="index + 'd'" class="record-description" :class="getRowClass2(index)">
           <md-table-cell colspan="8">
-            <md-button class="md-accent md-raised md-dense record-add-btn">
-              <md-icon>add</md-icon>
-              Add More Info
-            </md-button>
-            {{ record.description }}
+            <div class="content">
+              <p>{{ record.description }}</p>
+              <div class="for-btn">
+                <md-button class="md-primary md-raised md-dense btn" @click.prevent="addRecordBySerial(record)">
+                  <md-icon>add</md-icon>
+                  Add More Info
+                </md-button>
+              </div>
+            </div>
           </md-table-cell>
         </md-table-row>
       </template>
@@ -122,13 +126,12 @@
 <script>
 import axios from 'axios'
 import { environment } from '@/environments/environment'
-import RecordRow from '@/components/records/RecordRow'
+import moment from 'moment'
 const backendUrl = environment.apiURL + 'records'
 
 export default {
   name: 'RecordsList',
   props: ['searchString'],
-  components: {RecordRow},
   data () {
     return {
       search: '',
@@ -175,22 +178,26 @@ export default {
       this.getRecords()
     },
     nextPage () {
+      this.selectedIndex = null
       if (this.page < this.pages) {
         this.page++
         this.getRecords()
       }
     },
     previousPage () {
+      this.selectedIndex = null
       if (this.page > 1) {
         this.page--
         this.getRecords()
       }
     },
     firstPage () {
+      this.selectedIndex = null
       this.page = 1
       this.getRecords()
     },
     lastPage () {
+      this.selectedIndex = null
       this.page = this.pages
       this.getRecords()
     },
@@ -204,6 +211,15 @@ export default {
     addRecordBySerial (record) {
       record.description = ''
       this.$emit('addNew', record)
+    },
+    getRowClass1 (index) {
+      return { 'selected-row-1': index === this.selectedIndex }
+    },
+    getRowClass2 (index) {
+      return { 'selected-row-2': index === this.selectedIndex }
+    },
+    formatDate (date) {
+      return date ? moment(date).format('MM/DD/YY') : ''
     }
   },
   filters: {
@@ -226,17 +242,28 @@ export default {
   span.sort{
     cursor: pointer;
   }
-  .record-serial{
-    cursor: pointer;
+  .record-description {
+    display: none;
   }
   .record-description td{
-    background-color: #fff !important;
+    white-space: pre-wrap;
+    background-color: transparent !important;
   }
-  .record-add-btn{
-    float: right;
-    margin-left: 30px;
-    margin-bottom: 20px;
+  .record-description .content {
+    display: flex;
+    justify-content: space-between;
+  }
+  .record-description .for-btn button {
     margin-right: 0;
+    margin-left: 30px;
+  }
+
+  .selected-row-1{
+    background-color: #dedede;
+  }
+  .selected-row-2{
+    background-color: #eee;
+    display: table-row !important;
   }
 
   .no-records{

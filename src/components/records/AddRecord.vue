@@ -42,6 +42,7 @@
               v-model="record.warranty_to"
               :clear-button="true"
               :placeholder="'Warranty Expires On'"
+              :disabled="submitted"
             >
             </datepicker>
 
@@ -162,7 +163,6 @@ export default {
       }
     },
     validateRecord () {
-      console.log(this.record.warranty_to)
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.saveRecord()

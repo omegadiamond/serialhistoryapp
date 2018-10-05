@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const moment = require('moment')
 const { Op } = require('../db')
 const Record = require('../models/Record')
 const checkAuth = require('../middlewares/check-auth')
@@ -43,7 +44,7 @@ router.post('/', checkAuth, (req, res, next) => {
     sales_order: req.body.sales_order,
     customer_id: req.body.customer_id,
     description: req.body.description,
-    warranty_to: !req.body.warranty_to ? null : req.body.warranty_to
+    warranty_to: req.body.warranty_to ? req.body.warranty_to : null /* moment(req.body.warranty_to, 'MM/DD/YY').format('YYYY-MM-DD') */
   })
     .then(result => {
       res.status(201).json({ record: result })

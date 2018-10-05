@@ -3,7 +3,7 @@
     <md-toolbar md-elevation="1" class="md-primary nav-toolbar">
       <h1 class="md-title" style="flex: 1;" @click="navAddRecord()">Product History App</h1>
 
-      <md-button v-if="loggedIn" class="md-icon-button md-raised md-accent nav-button" @click=navAddRecord()>
+      <md-button v-if="loggedIn" class="md-icon-button md-raised md-accent nav-button" @click=navAddRecord() title="Add New Record">
         <md-icon>add</md-icon>
       </md-button>
 
@@ -11,7 +11,7 @@
         <md-input id="navSearch" v-model.trim="searchString" placeholder="Search" @input="onSearch()"></md-input>
       </md-field>
 
-      <md-button v-if="loggedIn" class="md-icon-button md-raised md-accent nav-button" @click="navListRecords()">
+      <md-button v-if="loggedIn" class="md-icon-button md-raised md-accent nav-button" @click="navListRecords()" title="Search for a Record">
         <md-icon>search</md-icon>
       </md-button>
     </md-toolbar>
@@ -19,7 +19,7 @@
     <div class="container">
       <!--<router-view/>-->
 
-      <login v-if="!loggedIn" v-on:onLogin="logIn($event)"></login>
+      <login v-if="!loggedIn" v-on:onLogin="toLogin($event)"></login>
 
       <records-list
         v-if="loggedIn && searchMode"
@@ -54,20 +54,14 @@ export default {
     return {
       loggedIn: false,
       searchString: '',
-      searchMode: true,
+      searchMode: false,
       newRecord: {}
     }
   },
   methods: {
-    onSomething (val) {
-      console.log(val)
-    },
-    onSomething2 () {
-      console.log(this.$refs.datepick)
-    },
-    logIn (loggedName) {
+    toLogin (loggedName) {
       this.loggedIn = true
-      axios.defaults.headers.common['Authorization'] = this.loggedName
+      axios.defaults.headers.common['Authorization'] = loggedName
     },
     onSearch () {
       if (this.searchString) {
@@ -100,8 +94,8 @@ export default {
 .nav-search:before{
   background-color: #ff5252 !important;
 }
-.nav-button{
-  /*margin: 0 5px !important;*/
+.nav-search.md-focused .md-input{
+  color: #ff5252 !important;
 }
 
 .container{
@@ -110,8 +104,6 @@ export default {
 }
 
 /* datapicker */
-.datepicker{
-}
 .datepicker > div {
   width: 100%;
 }
@@ -130,9 +122,10 @@ export default {
   font-size: 16px;
   line-height: 32px;
   width: calc(100% - 20px);
+  background-color: transparent !important;
 }
-  .datepicker .vdp-datepicker__clear-button{
-    font-size: 22px;
-    line-height: 22px;
-  }
+.datepicker .vdp-datepicker__clear-button{
+  font-size: 22px;
+  line-height: 22px;
+}
 </style>

@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../db')
 const sequelizePaginate = require('sequelize-paginate')
-const moment = require('moment')
 
 const Record = sequelize.define('record', {
   created_at: {
@@ -9,9 +8,9 @@ const Record = sequelize.define('record', {
     allowNull: false,
     defaultValue: Sequelize.NOW,
     primaryKey: true,
-    get () {
+    /*get () {
       return moment(this.getDataValue('created_at')).format('MM/DD/YY')
-    }
+    }*/
   },
   created_by: {
     type: Sequelize.TEXT,
@@ -45,13 +44,13 @@ const Record = sequelize.define('record', {
   warranty_to: {
     type: Sequelize.DATEONLY,
     allowNull: true,
-    get () {
+    /*get () {
       if (this.getDataValue('warranty_to')) {
         return moment(this.getDataValue('warranty_to')).format('MM/DD/YY')
       } else {
         return null
       }
-    }
+    }*/
   }
 }, {
   timestamps: true,
