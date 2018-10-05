@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import AppLogin from '@/components/AppLogin'
+import Login from '@/components/Login'
 import RecordList from '@/components/records/RecordList'
 import AddRecord from '@/components/records/AddRecord'
 import { EventBus } from '@/event-bus'
@@ -43,7 +43,7 @@ export default new Router({
     },
     {
       path: '/login',
-      component: AppLogin,
+      component: Login,
       beforeEnter: ifNotAuthenticated
     },
     {

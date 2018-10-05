@@ -3,7 +3,7 @@
       <form novalidate @submit.prevent="validateRecord">
         <md-card>
           <md-card-header>
-            <h1 class="md-title" v-if="record.serial_number">Add Record for Serial #: <md-content class="md-primary">{{ record.serial_number }}</md-content> </h1>
+            <h1 class="md-title" v-if="record.serial_number">Add Record for Serial #: <md-content class="serial-num">{{ record.serial_number }}</md-content> </h1>
             <h1 class="md-title" v-else>Add New Product Record</h1>
           </md-card-header>
 
@@ -36,26 +36,31 @@
               <span class="md-error" v-else-if="!$v.record.customer_id.minlength && !$v.record.customer_id.maxlength">Customer ID should be between {{ $v.record.customer_id.$params.minLength.min }} and {{ $v.record.customer_id.$params.maxLength.max }} characters</span>
             </md-field>
 
-            <md-datepicker v-model="record.warranty_to" md-immediately :disabled="submitted" ref="datepick">
-              <label>Warranty Ends On</label>
-            </md-datepicker>
+            <datepicker
+              :class="getValidationClass('warranty_to')"
+              class="datepicker md-field md-theme-default"
+              v-model="record.warranty_to"
+              :clear-button="true"
+              :placeholder="'Warranty Expires On'"
+            >
+            </datepicker>
 
             <md-field :class="getValidationClass('description')">
               <label for="description">Description</label>
               <md-textarea name="description" id="description" v-model.trim="record.description" :disabled="submitted" md-autogrow/>
               <span class="md-error" v-if="!$v.record.description.required">Description is required</span>
-              <span class="md-error" v-else-if="!$v.record.description.minlength && !$v.record.description.maxlength">Description should be between {{ $v.record.description.$params.minLength.min }} and {{ $v.record.description.$params.maxLength.max }} characters</span>
+              <span class="md-error" v-else-if="!$v.record.description.minlength">Description should be at least {{ $v.record.description.$params.minLength.min }} characters</span>
             </md-field>
           </md-card-content>
 
           <md-card-actions v-bind:style="[recordSaved ? {'justify-content': 'space-between'} : {}]">
             <md-content class="md-headline" v-if="newSerialNumber">New Serial #:
-              <md-content class="md-primary">{{ newSerialNumber }}</md-content>
+              <md-content class="serial-num">{{ newSerialNumber }}</md-content>
             </md-content>
-            <md-content class="md-headline" v-else-if="recordSaved && record.serial_number" style="color: gray">Saved..</md-content>
+            <md-content class="md-headline" v-else-if="recordSaved && record.serial_number" style="color: gray">Added..</md-content>
 
-            <md-button type="submit" class="md-primary" :disabled="submitted">
-              <span v-if="record.created_at">Submit</span>
+            <md-button type="submit" class="md-primary md-raised" :disabled="submitted">
+              <span v-if="record.created_at">Add</span>
               <span v-else>Get Serial #</span>
             </md-button>
           </md-card-actions>
@@ -66,11 +71,9 @@
         <md-button class="md-raised md-accent" @click="resetRecordForm">
           <md-icon>add</md-icon> Add New
         </md-button>
-        <router-link to="/">
-          <md-button class="md-raised md-primary">
-            <md-icon>list</md-icon> View All
-          </md-button>
-        </router-link>
+        <md-button class="md-raised md-primary" @click="$emit('listRecords')">
+          <md-icon>list</md-icon> View All
+        </md-button>
       </div>
     </div>
 </template>
@@ -85,11 +88,16 @@ import {
 } from 'vuelidate/lib/validators'
 import axios from 'axios'
 import { environment } from '@/environments/environment'
+import Datepicker from 'vuejs-datepicker'
 const backendUrl = environment.apiURL + 'records'
 
 export default {
   name: 'AddRecord',
+  components: {Datepicker},
   mixins: [validationMixin, focusMixin],
+  props: {
+    newRecord: {}
+  },
   data: () => ({
     focused: true,
     record: {
@@ -123,8 +131,7 @@ export default {
       },
       description: {
         required,
-        minLength: minLength(5),
-        maxLength: maxLength(1500)
+        minLength: minLength(5)
       },
       serial_number: {
         minLength: minLength(6),
@@ -133,9 +140,18 @@ export default {
     }
   },
   mounted () {
-    if (this.$route.params.record) {
-      this.record = this.$route.params.record
+    if (this.newRecord) {
+      this.record = this.newRecord
       this.focused = false
+    } else {
+      this.resetRecordForm()
+    }
+  },
+  watch: {
+    newRecord: function (val) {
+      if (!val) {
+        this.resetRecordForm()
+      }
     }
   },
   methods: {
@@ -146,6 +162,7 @@ export default {
       }
     },
     validateRecord () {
+      console.log(this.record.warranty_to)
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.saveRecord()
@@ -170,6 +187,7 @@ export default {
         })
         .catch(err => {
           console.error(err)
+          alert('DB error occurred')
         })
     },
     resetRecordForm () {
@@ -181,7 +199,6 @@ export default {
         description: null,
         serial_number: null
       }
-      this.$refs.datepick.modelDate = ''
       this.submitted = false
       this.recordSaved = false
       this.newSerialNumber = null
@@ -200,6 +217,10 @@ export default {
   .md-content{
     display: inline-block;
     padding: 0 5px;
+  }
+  .serial-num {
+    color: blueviolet;
+    font-weight: bold;
   }
   .actionDiv{
     margin-top: 15px;

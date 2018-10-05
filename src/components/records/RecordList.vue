@@ -5,10 +5,6 @@
         <div class="md-toolbar-section-start">
           <h1 class="md-title">Records</h1>
         </div>
-        <div class="md-toolbar-section-start"></div>
-        <md-field md-clearable class="md-toolbar-section-end">
-          <md-input placeholder="Search" maxlength="20" v-model="search" @input="searchRecord()"/>
-        </md-field>
       </md-table-toolbar>
 
       <md-table-row>
@@ -70,30 +66,36 @@
         </md-table-head>
       </md-table-row>
 
-      <md-table-row v-for="(record, index) in records" :key="index" @click="onSelect(record)" class="record-row">
-        <md-table-cell><a @click.prevent="addRecordBySerial(record)" class="record-serial">{{ record.serial_number }}</a></md-table-cell>
-        <md-table-cell>{{ record.product_code }}</md-table-cell>
-        <md-table-cell>{{ record.sales_order }}</md-table-cell>
-        <md-table-cell>{{ record.customer_id }}</md-table-cell>
-        <md-table-cell class="record-description">
-          <!--<truncate clamp="Read More" :length="300" less="Show Less" type="html" :text="record.description"></truncate>-->
-          <span v-if="selectedRecord === record">{{ selectedRecord.description }}</span>
-          <span v-else>{{ record.description | truncate(300) }}</span>
-        </md-table-cell>
-        <md-table-cell>{{ record.warranty_to }}</md-table-cell>
-        <md-table-cell>{{ record.created_at }}</md-table-cell>
-        <md-table-cell>{{ record.created_by }}</md-table-cell>
-      </md-table-row>
+      <template v-for="(record, index) in records" >
+        <md-table-row @click="onSelect(index)" :key="index">
+          <md-table-cell><a @click.prevent="addRecordBySerial(record)" class="record-serial">{{ record.serial_number }}</a></md-table-cell>
+          <md-table-cell>{{ record.product_code }}</md-table-cell>
+          <md-table-cell>{{ record.sales_order }}</md-table-cell>
+          <md-table-cell>{{ record.customer_id }}</md-table-cell>
+          <md-table-cell>{{ record.description | truncate(100) }}</md-table-cell>
+          <md-table-cell>{{ record.warranty_to }}</md-table-cell>
+          <md-table-cell>{{ record.created_at }}</md-table-cell>
+          <md-table-cell>{{ record.created_by }}</md-table-cell>
+        </md-table-row>
+
+        <md-table-row class="record-description" :key="index + 'd'" :style="{ display: index === selectedIndex ? 'table-row' : 'none'}">
+          <md-table-cell colspan="8">
+            <md-button class="md-accent md-raised md-dense record-add-btn">
+              <md-icon>add</md-icon>
+              Add More Info
+            </md-button>
+            {{ record.description }}
+          </md-table-cell>
+        </md-table-row>
+      </template>
     </md-table>
 
     <md-card class="no-records" v-if="records.length === 0">
       <md-card-content>
         <md-button disabled class="md-mini">No records found...</md-button>
-        <router-link to="/records/add">
-          <md-button class="md-button md-accent md-raised">
-            <md-icon>add</md-icon> Add New
-          </md-button>
-        </router-link>
+        <md-button class="md-button md-accent md-raised" @click="$emit('addNew')">
+          <md-icon>add</md-icon> Add New
+        </md-button>
       </md-card-content>
     </md-card>
 
@@ -106,11 +108,11 @@
         <md-icon>navigate_before</md-icon>
       </md-button>
       <md-button class="page-button" disabled>{{ page }}/{{ pages }}</md-button>
-      <md-button class="md-primary md-raised md-icon-button md-mini" @click="nextPage()" :disabled="page === pages">
+      <md-button class="md-primary md-raised md-icon-button md-mini" @click="nextPage()" :disabled="page >= pages">
         <md-icon>navigate_next</md-icon>
       </md-button>
 
-      <md-button class="md-primary md-raised md-icon-button md-mini" @click="lastPage()" :disabled="page === pages" style="margin-left: 10px;">
+      <md-button class="md-primary md-raised md-icon-button md-mini" @click="lastPage()" :disabled="page >= pages" style="margin-left: 10px;">
         <md-icon>last_page</md-icon>
       </md-button>
     </div>
@@ -120,29 +122,35 @@
 <script>
 import axios from 'axios'
 import { environment } from '@/environments/environment'
-import truncate from 'vue-truncate-collapsed'
+import RecordRow from '@/components/records/RecordRow'
 const backendUrl = environment.apiURL + 'records'
 
 export default {
   name: 'RecordsList',
-  components: {
-    truncate
-  },
+  props: ['searchString'],
+  components: {RecordRow},
   data () {
     return {
       search: '',
       records: [],
       page: 1,
       paginate: 10,
-      pages: null,
+      pages: 0,
       results: 0,
       sortBy: 'created_at',
       sortDirection: 'DESC',
-      selectedRecord: null
+      selectedIndex: null
     }
   },
   mounted () {
-    this.getRecords()
+    this.search = this.searchString
+    this.firstPage()
+  },
+  watch: {
+    searchString: function (val) {
+      this.search = val
+      this.firstPage()
+    }
   },
   methods: {
     getRecords () {
@@ -154,6 +162,7 @@ export default {
         })
         .catch(err => {
           console.log(err)
+          alert('Server Error!')
         })
     },
     changeSort (column) {
@@ -185,21 +194,29 @@ export default {
       this.page = this.pages
       this.getRecords()
     },
-    searchRecord () {
-      this.firstPage()
-    },
-    onSelect (record) {
-      this.selectedRecord = record
+    onSelect (rindex) {
+      if (this.selectedIndex === rindex) {
+        this.selectedIndex = null
+      } else {
+        this.selectedIndex = rindex
+      }
     },
     addRecordBySerial (record) {
       record.description = ''
-      this.$router.push({name: 'add-record', params: {record: record}})
+      this.$emit('addNew', record)
     }
   },
   filters: {
     truncate: function (text, length) {
       length = length || 300
       return text.length > length ? text.slice(0, length) + '...' : text
+    }
+  },
+  directives: {
+    focus: {
+      inserted: function (el) {
+        el.focus()
+      }
     }
   }
 }
@@ -209,14 +226,17 @@ export default {
   span.sort{
     cursor: pointer;
   }
-  /*.record-row{
-    cursor: pointer;
-  }*/
   .record-serial{
     cursor: pointer;
   }
-  .record-description{
-    white-space: pre-wrap;
+  .record-description td{
+    background-color: #fff !important;
+  }
+  .record-add-btn{
+    float: right;
+    margin-left: 30px;
+    margin-bottom: 20px;
+    margin-right: 0;
   }
 
   .no-records{

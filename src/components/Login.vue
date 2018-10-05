@@ -24,7 +24,6 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-import { EventBus } from '@/event-bus'
 
 export default {
   name: 'Login',
@@ -43,13 +42,8 @@ export default {
     validateUser () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
-        this.loginUser()
+        this.$emit('onLogin', this.name)
       }
-    },
-    loginUser () {
-      EventBus.$emit('login', this.name)
-      // this.$router.push('/records/add')
-      this.$router.push('/records/add')
     }
   }
 }

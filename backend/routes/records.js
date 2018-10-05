@@ -5,7 +5,7 @@ const Record = require('../models/Record')
 const checkAuth = require('../middlewares/check-auth')
 
 router.get('/', checkAuth, (req, res, next) => {
-  console.log(req.query)
+  // console.log(req.query)
   const search = req.query.search
   const sortBy = req.query.sortBy || 'created_at'
   const sortDirection = req.query.sortDirection || 'DESC'
@@ -43,7 +43,7 @@ router.post('/', checkAuth, (req, res, next) => {
     sales_order: req.body.sales_order,
     customer_id: req.body.customer_id,
     description: req.body.description,
-    warranty_to: req.body.warranty_to
+    warranty_to: !req.body.warranty_to ? null : req.body.warranty_to
   })
     .then(result => {
       res.status(201).json({ record: result })

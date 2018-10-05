@@ -1,13 +1,21 @@
+/*
+CREATE DATABASE serialhistory
+  WITH ENCODING='UTF8'
+       OWNER=serialhistory
+       CONNECTION LIMIT=-1;
+*/
+
+
 -- create records table and it's indexes
 CREATE TABLE IF NOT EXISTS records (
-   created_at timestamp with time zone NOT NULL,
+   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
    created_by text NOT NULL,
    serial_number character(6) NOT NULL,
    product_code character(7) NOT NULL,
    sales_order character varying(20) NOT NULL,
    customer_id character varying(20) NOT NULL,
    description text NOT NULL,
-   warranty_to date,
+   warranty_to date CHECK (warranty_to > '2000-01-01'),
    PRIMARY KEY (created_at, serial_number)
 )
 WITH (
@@ -45,11 +53,8 @@ LANGUAGE PLPGSQL;
 -- create trigger to insert serial_number
 CREATE OR REPLACE FUNCTION records_stamp() RETURNS TRIGGER AS $records_stamp$
 BEGIN
-	IF NEW.serial_number IS NULL OR char_length(NEW.serial_number) < 4 THEN
+	IF NEW.serial_number IS NULL OR char_length(NEW.serial_number) < 2 THEN
 		NEW.serial_number := generate_serial();
-	END IF;
-	IF NEW.created_at IS NULL THEN
-		NEW.created_at := CURRENT_TIMESTAMP;
 	END IF;
 	RETURN NEW;
 END;
