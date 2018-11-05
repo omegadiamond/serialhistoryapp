@@ -102,9 +102,8 @@ import {
   maxLength
 } from 'vuelidate/lib/validators'
 import axios from 'axios'
-import { environment } from '@/environments/environment'
 import Datepicker from 'vuejs-datepicker'
-const backendUrl = environment.apiURL + 'records'
+const backendUrl = process.env.API_URL + 'records'
 
 export default {
   name: 'AddRecord',

@@ -133,9 +133,8 @@
 
 <script>
 import axios from 'axios'
-import { environment } from '@/environments/environment'
 import moment from 'moment'
-const backendUrl = environment.apiURL + 'records'
+const backendUrl = process.env.API_URL + 'records'
 
 export default {
   name: 'RecordsList',
