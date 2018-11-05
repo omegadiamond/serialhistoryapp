@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bin/www",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server:dev": "nodemon ./bin/www",
+    "server": "pm2 start ./bin/www"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "pg": "^7.6.0",
+    "sequelize": "^4.41.0",
+    "sequelize-paginate": "^1.1.3"
+  }
+}
