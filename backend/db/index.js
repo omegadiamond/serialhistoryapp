@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize('serialhistory', 'serialhistory', 'serialhistory_password', {
+const sequelize = new Sequelize('serialhistory', 'serialhistory', 'serialhistory', {
   host: 'localhost',
   dialect: 'postgres',
   port: 5432,

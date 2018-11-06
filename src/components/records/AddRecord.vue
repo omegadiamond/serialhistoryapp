@@ -16,7 +16,7 @@
             </md-field>
 
             <md-field :class="getValidationClass('product_code')">
-              <label for="product_code">Product Code</label>
+              <label for="product_code">Product Code*</label>
               <md-input id="product_code" v-model.trim="record.product_code" :disabled="submitted" ref="product_code" v-focus="focused" @focus="focused = true" @blur="focused = false"/>
               <span class="md-error" v-if="!$v.record.product_code.required">Product Code is required</span>
               <span class="md-error" v-else-if="!$v.record.product_code.minlength && !$v.record.product_code.maxlength">Product Code should be between {{ $v.record.product_code.$params.minLength.min }} and {{ $v.record.product_code.$params.maxLength.max }} characters</span>
@@ -51,7 +51,7 @@
             </datepicker>
 
             <md-field :class="getValidationClass('description')">
-              <label for="description">Description</label>
+              <label for="description">Description*</label>
               <md-textarea name="description" id="description" v-model.trim="record.description" :disabled="submitted" md-autogrow/>
               <span class="md-error" v-if="!$v.record.description.required">Description is required</span>
               <span class="md-error" v-else-if="!$v.record.description.minlength">Description should be at least {{ $v.record.description.$params.minLength.min }} characters</span>

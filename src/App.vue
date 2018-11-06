@@ -86,6 +86,9 @@ export default {
 </script>
 
 <style>
+.md-title{
+  cursor: pointer;
+}
 .nav-search{
   max-width: 180px;
   margin-left: 5px;
