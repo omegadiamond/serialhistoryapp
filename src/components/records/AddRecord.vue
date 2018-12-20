@@ -148,8 +148,8 @@ export default {
         minLength: minLength(5)
       },
       serial_number: {
-        minLength: minLength(6),
-        maxLength: maxLength(6)
+        minLength: minLength(7),
+        maxLength: maxLength(7)
       }
     }
   },
