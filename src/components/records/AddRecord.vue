@@ -16,10 +16,9 @@
             </md-field>
 
             <md-field :class="getValidationClass('product_code')">
-              <label for="product_code">Product Code*</label>
+              <label for="product_code">Product Code</label>
               <md-input id="product_code" v-model.trim="record.product_code" :disabled="submitted" ref="product_code" v-focus="focused" @focus="focused = true" @blur="focused = false"/>
-              <span class="md-error" v-if="!$v.record.product_code.required">Product Code is required</span>
-              <span class="md-error" v-else-if="!$v.record.product_code.minlength && !$v.record.product_code.maxlength">Product Code should be between {{ $v.record.product_code.$params.minLength.min }} and {{ $v.record.product_code.$params.maxLength.max }} characters</span>
+              <span class="md-error" v-if="!$v.record.product_code.minlength && !$v.record.product_code.maxlength">Product Code should be between {{ $v.record.product_code.$params.minLength.min }} and {{ $v.record.product_code.$params.maxLength.max }} characters</span>
             </md-field>
 
             <md-field :class="getValidationClass('sales_order')">
@@ -131,7 +130,6 @@ export default {
   validations: {
     record: {
       product_code: {
-        required,
         minLength: minLength(2),
         maxLength: maxLength(7)
       },

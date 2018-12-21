@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS records (
    created_at timestamp with time zone NOT NULL DEFAULT NOW(),
    created_by text NOT NULL,
    serial_number character(7) NOT NULL,
-   product_code character(7) NOT NULL,
+   product_code character(7),
    sales_order character varying(20),
    customer_id_sold character varying(20),
    customer_id_ship character varying(20),

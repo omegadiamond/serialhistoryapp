@@ -7,10 +7,7 @@ const Record = sequelize.define('record', {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.NOW,
-    primaryKey: true,
-    /*get () {
-      return moment(this.getDataValue('created_at')).format('MM/DD/YY')
-    }*/
+    primaryKey: true
   },
   created_by: {
     type: Sequelize.TEXT,
@@ -24,7 +21,7 @@ const Record = sequelize.define('record', {
   },
   product_code: {
     type: Sequelize.CHAR(7),
-    allowNull: false
+    allowNull: true
   },
   sales_order: {
     type: Sequelize.STRING(20),
@@ -42,19 +39,12 @@ const Record = sequelize.define('record', {
     type: Sequelize.TEXT,
     allowNull: false,
     get () {
-      return this.getDataValue('description') /* .replace(/(?:\r\n|\r|\n)/g, '<br>'); */
+      return this.getDataValue('description')
     }
   },
   warranty_to: {
     type: Sequelize.DATEONLY,
-    allowNull: true,
-    /*get () {
-      if (this.getDataValue('warranty_to')) {
-        return moment(this.getDataValue('warranty_to')).format('MM/DD/YY')
-      } else {
-        return null
-      }
-    }*/
+    allowNull: true
   }
 }, {
   timestamps: true,
