@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS records (
    serial_number character(7) NOT NULL,
    product_code character(7),
    sales_order character varying(20),
-   customer_id_sold character varying(20),
-   customer_id_ship character varying(20),
+   customer_id_sold character varying(50),
+   customer_id_ship character varying(100),
    description text NOT NULL,
    warranty_to date CHECK (warranty_to > '2000-01-01'),
    PRIMARY KEY (created_at, serial_number)
