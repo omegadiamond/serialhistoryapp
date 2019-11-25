@@ -134,7 +134,12 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-const backendUrl = process.env.API_URL + 'records'
+import {EventBus} from '../../event-bus'
+
+let backendUrl = 'http://' + localStorage.getItem('backendIp') + '/records'
+EventBus.$on('IP_CHANGED', (ip) => {
+  backendUrl = 'http://' + ip + '/records'
+})
 
 export default {
   name: 'RecordsList',

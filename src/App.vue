@@ -43,6 +43,7 @@ import Login from '@/components/Login'
 import RecordsList from '@/components/records/RecordList'
 import AddRecord from '@/components/records/AddRecord'
 import axios from 'axios'
+import {EventBus} from './event-bus'
 export default {
   name: 'App',
   components: {
@@ -59,9 +60,13 @@ export default {
     }
   },
   methods: {
-    toLogin (loggedName) {
+    toLogin (lInfo) {
+      console.log('toLogin:', lInfo.name, lInfo.ip)
+      localStorage.setItem('backendIp', lInfo.ip)
+      EventBus.$emit('IP_CHANGED', lInfo.ip)
+
       this.loggedIn = true
-      axios.defaults.headers.common['Authorization'] = loggedName
+      axios.defaults.headers.common['Authorization'] = lInfo.name
     },
     onSearch () {
       if (this.searchString) {

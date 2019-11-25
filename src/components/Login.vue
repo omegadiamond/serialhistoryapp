@@ -12,6 +12,12 @@
                 <span class="md-error" v-if="!$v.name.required">Name is required</span>
                 <span class="md-error" v-else-if="!$v.name.minlength && !$v.name.maxlength">Invalid name length</span>
               </md-field>
+
+            <md-field v-bind:class="{ 'md-invalid': $v.ip.$invalid && $v.ip.$dirty }">
+              <label for="ip">Backend IP (Micah VM)</label>
+              <md-input name="ip" id="ip" v-model.trim="ip"/>
+              <span class="md-error" v-if="!$v.ip.required">IP is required</span>
+            </md-field>
           </md-card-content>
           <md-card-actions>
             <md-button class="md-primary md-raised" type="submit">Login</md-button>
@@ -29,22 +35,34 @@ export default {
   name: 'Login',
   mixins: [validationMixin],
   data: () => ({
-    name: null
+    name: null,
+    ip: ''
   }),
   validations: {
     name: {
       required,
       minLength: minLength(3),
       maxLength: maxLength(30)
+    },
+    ip: {
+      required
     }
   },
   methods: {
     validateUser () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
-        this.$emit('onLogin', this.name)
+        this.$emit('onLogin', {name: this.name, ip: this.ip})
       }
+    },
+    getIpFromLocalStorage () {
+      const ip = localStorage.getItem('backendIp')
+      if (!ip) return
+      this.ip = ip
     }
+  },
+  created () {
+    this.getIpFromLocalStorage()
   }
 }
 </script>

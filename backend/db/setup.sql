@@ -5,6 +5,18 @@ CREATE DATABASE serialhistory
        CONNECTION LIMIT=-1;
 */
 
+/*
+CREATE ROLE serialhistory WITH
+	LOGIN
+	NOSUPERUSER
+	NOCREATEDB
+	NOCREATEROLE
+	INHERIT
+	NOREPLICATION
+	CONNECTION LIMIT -1
+	PASSWORD 'xxxxxx';
+*/
+
 
 -- create records table and it's indexes
 CREATE TABLE IF NOT EXISTS records (

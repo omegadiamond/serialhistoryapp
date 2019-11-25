@@ -102,7 +102,12 @@ import {
 } from 'vuelidate/lib/validators'
 import axios from 'axios'
 import Datepicker from 'vuejs-datepicker'
-const backendUrl = process.env.API_URL + 'records'
+import {EventBus} from '../../event-bus'
+
+let backendUrl = 'http://' + localStorage.getItem('backendIp') + '/records'
+EventBus.$on('IP_CHANGED', (ip) => {
+  backendUrl = 'http://' + ip + '/records'
+})
 
 export default {
   name: 'AddRecord',
