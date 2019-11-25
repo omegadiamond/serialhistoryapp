@@ -136,9 +136,9 @@ import axios from 'axios'
 import moment from 'moment'
 import {EventBus} from '../../event-bus'
 
-let backendUrl = 'http://' + localStorage.getItem('backendIp') + '/records'
+let backendUrl = 'http://' + localStorage.getItem('backendIp') + ':3000/records'
 EventBus.$on('IP_CHANGED', (ip) => {
-  backendUrl = 'http://' + ip + '/records'
+  backendUrl = 'http://' + ip + ':3000/records'
 })
 
 export default {
